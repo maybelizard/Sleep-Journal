@@ -31,9 +31,8 @@ class SleepEntryController extends Controller
 
     public function store(SleepEntryRequest $request): RedirectResponse
     {
-        $data = $request->validated();
-        $habitIds = $data['habits'] ?? [];
-        unset($data['habits']);
+        $data = $request->entryData();
+        $habitIds = $request->validated('habits', []);
 
         $entry = $request->user()->sleepEntries()->create($data);
         $entry->habits()->sync($habitIds);
@@ -56,9 +55,8 @@ class SleepEntryController extends Controller
     {
         Gate::authorize('update', $sleepEntry);
 
-        $data = $request->validated();
-        $habitIds = $data['habits'] ?? [];
-        unset($data['habits']);
+        $data = $request->entryData();
+        $habitIds = $request->validated('habits', []);
 
         $sleepEntry->update($data);
         $sleepEntry->habits()->sync($habitIds);

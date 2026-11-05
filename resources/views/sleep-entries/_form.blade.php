@@ -11,30 +11,39 @@
 
     <div>
         <x-input-label for="date" value="Date (the morning you woke up)" />
-        <x-text-input id="date" name="date" type="date" class="mt-1 block w-full" :value="old('date', $sleepEntry?->date?->format('Y-m-d'))" required />
+        <x-text-input id="date" name="date" type="date" class="mt-1 block w-full"
+            max="{{ now()->format('Y-m-d') }}"
+            :value="old('date', $sleepEntry?->date?->format('Y-m-d') ?? now()->format('Y-m-d'))" required />
         <x-input-error :messages="$errors->get('date')" class="mt-2" />
     </div>
 
-    <div>
-        <x-input-label for="bedtime" value="Bedtime" />
-        <x-text-input id="bedtime" name="bedtime" type="datetime-local" class="mt-1 block w-full" :value="old('bedtime', $sleepEntry?->bedtime?->format('Y-m-d\TH:i'))" required />
-        <x-input-error :messages="$errors->get('bedtime')" class="mt-2" />
+    <div class="grid grid-cols-2 gap-4">
+        <div>
+            <x-input-label for="bedtime" value="Bedtime" />
+            <x-text-input id="bedtime" name="bedtime" type="time" class="mt-1 block w-full"
+                :value="old('bedtime', $sleepEntry?->bedtime?->format('H:i'))" required />
+            <x-input-error :messages="$errors->get('bedtime')" class="mt-2" />
+        </div>
+
+        <div>
+            <x-input-label for="wake_time" value="Wake time" />
+            <x-text-input id="wake_time" name="wake_time" type="time" class="mt-1 block w-full"
+                :value="old('wake_time', $sleepEntry?->wake_time?->format('H:i'))" required />
+            <x-input-error :messages="$errors->get('wake_time')" class="mt-2" />
+        </div>
     </div>
 
     <div>
-        <x-input-label for="wake_time" value="Wake time" />
-        <x-text-input id="wake_time" name="wake_time" type="datetime-local" class="mt-1 block w-full"
-            :value="old('wake_time', $sleepEntry?->wake_time?->format('Y-m-d\TH:i'))" required />
-        <x-input-error :messages="$errors->get('wake_time')" class="mt-2" />
-    </div>
-
-    <div>
-        <x-input-label for="quality" value="Sleep quality" />
-        <select id="quality" name="quality" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
-            @for ($i = 1; $i <= 5; $i++)
-                <option value="{{ $i }}" @selected(old('quality', $sleepEntry?->quality) == $i)>{{ $i }}</option>
-            @endfor
-        </select>
+        <x-input-label value="Sleep quality" />
+        <div class="mt-2 grid grid-cols-5 gap-2">
+            @foreach (\App\Models\SleepEntry::QUALITY_LABELS as $value => $label)
+                <label class="quality-option">
+                    <input type="radio" name="quality" value="{{ $value }}" class="sr-only"
+                        @checked((int) old('quality', $sleepEntry?->quality) === $value) required>
+                    <span><b>{{ $value }}</b>{{ $label }}</span>
+                </label>
+            @endforeach
+        </div>
         <x-input-error :messages="$errors->get('quality')" class="mt-2" />
     </div>
 

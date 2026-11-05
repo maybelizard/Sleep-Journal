@@ -130,8 +130,8 @@ body::before {
    5. FORM CONTROLS
    ========================================================= */
 html input[type="text"], html input[type="email"], html input[type="password"],
-html input[type="date"], html input[type="datetime-local"], html input[type="number"],
-html select, html textarea {
+html input[type="date"], html input[type="datetime-local"], html input[type="time"],
+html input[type="number"], html select, html textarea {
     background-color: var(--night-950);
     color: var(--text);
     border-color: var(--border);
@@ -139,8 +139,80 @@ html select, html textarea {
 html input::placeholder, html textarea::placeholder { color: var(--muted); opacity: 0.7; }
 html option { background-color: var(--surface); color: var(--text); }
 
-html input[type="checkbox"] {
+/* ---------- Checkboxes: pink only when checked ---------- */
+html input[type="checkbox"],
+html input[type="checkbox"]:hover,
+html input[type="checkbox"]:focus,
+html input[type="checkbox"]:active {
     background-color: var(--night-950);
     border-color: var(--border);
-    color: var(--pink);          /* the checked fill color */
+    color: var(--pink);
+    box-shadow: none;      /* removes the forms plugin focus ring */
+    outline: none;
+}
+
+html input[type="checkbox"]:hover { border-color: rgba(183, 177, 255, 0.45); }
+
+html input[type="checkbox"]:checked,
+html input[type="checkbox"]:checked:hover,
+html input[type="checkbox"]:checked:focus,
+html input[type="checkbox"]:checked:active {
+    background-color: var(--pink);
+    border-color: var(--pink);
+    /* dark checkmark, readable on pink */
+    background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='%232b1252' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.2 5.3a1 1 0 0 0-1.4-1.4L6.7 8l-1.5-1.5a1 1 0 0 0-1.4 1.4l2.2 2.2a1 1 0 0 0 1.4 0l4.8-4.8z'/%3e%3c/svg%3e");
+}
+
+/* keep a visible indicator for keyboard users only, not on mouse clicks */
+html input[type="checkbox"]:focus-visible {
+    outline: 2px solid var(--yellow);
+    outline-offset: 2px;
+}
+
+html input[type="time"],
+html input[type="date"] {
+    color-scheme: dark;
+}
+
+html input[type="time"]::-webkit-calendar-picker-indicator,
+html input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.7;
+    filter: invert(86%) sepia(40%) saturate(500%) hue-rotate(310deg); /* soft pink tint */
+}
+html input[type="time"]::-webkit-calendar-picker-indicator:hover,
+html input[type="date"]::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+}
+
+/* ---------- Sleep quality pills ---------- */
+.quality-option span {
+    display: block;
+    padding: 0.6rem 0.25rem;
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--muted);
+    background: var(--night-950);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.quality-option span b {
+    display: block;
+    font-size: 1rem;
+    color: var(--text);
+}
+.quality-option:hover span { background: var(--surface-2); }
+
+.quality-option input:checked + span {
+    background: var(--pink);
+    border-color: var(--pink);
+    color: var(--on-accent);
+}
+.quality-option input:checked + span b { color: var(--on-accent); }
+
+.quality-option input:focus-visible + span {
+    outline: 2px solid var(--yellow);
+    outline-offset: 2px;
 }

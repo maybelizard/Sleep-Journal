@@ -26,6 +26,19 @@ class SleepEntry extends Model
         'wake_time' => 'datetime',
     ];
 
+    public const QUALITY_LABELS = [
+        1 => 'Awful',
+        2 => 'Poor',
+        3 => 'Okay',
+        4 => 'Good',
+        5 => 'Great',
+    ];
+
+    public function getQualityLabelAttribute(): string
+    {
+        return self::QUALITY_LABELS[$this->quality] ?? '—';
+    }
+
     protected static function booted(): void
     {
         static::saving(function (SleepEntry $entry) {

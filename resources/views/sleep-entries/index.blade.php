@@ -44,7 +44,10 @@
                                 <td class="px-4 py-3">
                                     {{ intdiv($entry->duration_minutes, 60) }}h {{ $entry->duration_minutes % 60 }}m
                                 </td>
-                                <td class="px-4 py-3">{{ $entry->quality }}/5</td>
+                                <td class="px-4 py-3">
+                                    {{ $entry->quality_label }}
+                                    <span class="text-xs text-gray-500">({{ $entry->quality }}/5)</span>
+                                </td>
                                 <td class="px-4 py-3">{{ $entry->habits->pluck('name')->join(', ') ?: '—' }}</td>
                                 <td class="flex gap-3 px-4 py-3">
                                     <a href="{{ route('sleep-entries.edit', $entry) }}"
