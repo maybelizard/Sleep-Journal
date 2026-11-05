@@ -2,10 +2,16 @@
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <h2 class="text-xl font-semibold text-gray-800">Sleep log</h2>
-            <a href="{{ route('sleep-entries.create') }}"
-               class="rounded-md bg-gray-800 px-4 py-2 text-xs font-semibold uppercase text-white hover:bg-gray-700">
-                Add entry
-            </a>
+            <div class="flex gap-2">
+                <a href="{{ route('habits.index') }}"
+                    class="rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold uppercase text-gray-700 hover:bg-gray-50">
+                    Edit habits
+                </a>
+                <a href="{{ route('sleep-entries.create') }}"
+                    class="rounded-md bg-gray-800 px-4 py-2 text-xs font-semibold uppercase text-white hover:bg-gray-700">
+                    Add sleep entry
+                </a>
+            </div>
         </div>
     </x-slot>
 
@@ -41,9 +47,10 @@
                                 <td class="px-4 py-3">{{ $entry->quality }}/5</td>
                                 <td class="px-4 py-3">{{ $entry->habits->pluck('name')->join(', ') ?: '—' }}</td>
                                 <td class="flex gap-3 px-4 py-3">
-                                    <a href="{{ route('sleep-entries.edit', $entry) }}" class="text-indigo-600 hover:underline">Edit</a>
+                                    <a href="{{ route('sleep-entries.edit', $entry) }}"
+                                        class="text-indigo-600 hover:underline">Edit</a>
                                     <form method="POST" action="{{ route('sleep-entries.destroy', $entry) }}"
-                                          onsubmit="return confirm('Delete this entry?')">
+                                        onsubmit="return confirm('Delete this entry?')">
                                         @csrf
                                         @method('DELETE')
                                         <button class="text-red-600 hover:underline">Delete</button>

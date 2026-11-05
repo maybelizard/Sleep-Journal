@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\SleepEntryController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\HabitController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -22,6 +23,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('sleep-entries', SleepEntryController::class)
         ->except('show')
         ->parameters(['sleep-entries' => 'sleepEntry']);
+    Route::resource('habits', HabitController::class)->only(['index', 'store', 'destroy']);
 });
 
 require __DIR__.'/auth.php';
