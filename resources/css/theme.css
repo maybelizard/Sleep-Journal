@@ -1,0 +1,146 @@
+/* =========================================================
+   1. TOKENS
+   ========================================================= */
+:root {
+    /* backgrounds (deep indigo night) */
+    --night-950: #0b0920;
+    --night-900: #110e2e;
+    --surface:   #1a1648;   /* cards, navbar */
+    --surface-2: #231f5a;   /* table header, hovers */
+    --border:    rgba(183, 177, 255, 0.16);
+
+    /* text */
+    --text:  #ece9ff;
+    --muted: #a8a5d6;
+
+    /* accents (soft pink + soft yellow) */
+    --pink:       #f9a8d4;
+    --pink-hover: #fbc2e0;
+    --pink-press: #f48fc3;
+    --yellow:     #fde68a;
+    --on-accent:  #2b1252;  /* text on pink buttons */
+    --danger:     #fda4af;
+
+    --radius: 1rem;
+    color-scheme: dark;     /* dark date pickers, scrollbars, etc. */
+}
+
+/* =========================================================
+   2. PAGE BACKGROUND
+   ========================================================= */
+html {
+    background:
+        radial-gradient(1100px 700px at 85% -10%, rgba(249, 168, 212, 0.13), transparent 60%),
+        radial-gradient(900px 600px at -10% 10%, rgba(99, 82, 214, 0.30), transparent 60%),
+        linear-gradient(180deg, var(--night-900), var(--night-950));
+    background-attachment: fixed;
+}
+body { color: var(--text); background: transparent; }
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.55;
+    background-size: 520px 520px;
+    background-image:
+        radial-gradient(1px 1px at 12% 18%, #fff, transparent),
+        radial-gradient(1.5px 1.5px at 48% 8%, #fde68a, transparent),
+        radial-gradient(1px 1px at 76% 32%, #fff, transparent),
+        radial-gradient(1px 1px at 30% 62%, #fff, transparent),
+        radial-gradient(1.5px 1.5px at 88% 74%, #f9a8d4, transparent),
+        radial-gradient(1px 1px at 60% 90%, #fff, transparent);
+}
+
+/* the full-height wrappers Breeze puts bg-gray-100 on */
+.min-h-screen { background: transparent; }
+
+/* =========================================================
+   3. SURFACES, TEXT, BORDERS
+   ========================================================= */
+.bg-white,
+.dark\:bg-gray-800 { background-color: var(--surface); }
+
+.bg-gray-50,
+.dark\:bg-gray-700 { background-color: var(--surface-2); }
+
+.hover\:bg-gray-50:hover,
+.hover\:bg-gray-100:hover,
+.focus\:bg-gray-50:focus,
+.focus\:bg-gray-100:focus,
+.dark\:hover\:bg-gray-700:hover,
+.dark\:focus\:bg-gray-700:focus { background-color: var(--surface-2); }
+
+.text-gray-900, .text-gray-800, .text-gray-700,
+.dark\:text-gray-100, .dark\:text-gray-200, .dark\:text-gray-300 { color: var(--text); }
+
+.text-gray-600, .text-gray-500, .text-gray-400,
+.dark\:text-gray-400, .dark\:text-gray-500 { color: var(--muted); }
+
+.hover\:text-gray-500:hover, .hover\:text-gray-700:hover,
+.hover\:text-gray-800:hover, .hover\:text-gray-900:hover,
+.focus\:text-gray-700:focus,
+.dark\:hover\:text-gray-100:hover, .dark\:hover\:text-white:hover { color: var(--text); }
+
+.border-gray-100, .border-gray-200, .border-gray-300,
+.dark\:border-gray-600, .dark\:border-gray-700 { border-color: var(--border); }
+
+.hover\:border-gray-300:hover { border-color: rgba(183, 177, 255, 0.4); }
+
+.divide-gray-100 > * + *,
+.divide-gray-200 > * + * { border-color: var(--border); }
+
+/* cards: rounder, soft outline */
+.sm\:rounded-lg { border-radius: var(--radius); }
+.shadow { box-shadow: 0 12px 32px -14px rgba(0, 0, 0, 0.7), 0 0 0 1px var(--border); }
+
+/* =========================================================
+   4. ACCENTS
+   ========================================================= */
+.text-indigo-600, .text-indigo-500, .dark\:text-indigo-400 { color: var(--pink); }
+
+/* active nav item: yellow underline */
+.border-indigo-400, .dark\:border-indigo-600 { border-color: var(--yellow); }
+.bg-indigo-50, .dark\:bg-indigo-900\/50 { background-color: rgba(253, 230, 138, 0.08); }
+.text-indigo-700, .dark\:text-indigo-300 { color: var(--yellow); }
+
+/* primary buttons (Breeze uses bg-gray-800, ours may use bg-indigo-600) */
+.bg-gray-800.text-white,
+.bg-indigo-600.text-white,
+.dark\:bg-gray-200 {
+    background-color: var(--pink);
+    color: var(--on-accent);
+}
+.hover\:bg-gray-700:hover, .hover\:bg-indigo-500:hover,
+.focus\:bg-gray-700:focus, .dark\:hover\:bg-white:hover { background-color: var(--pink-hover); }
+.active\:bg-gray-900:active, .active\:bg-indigo-700:active { background-color: var(--pink-press); }
+
+/* focus rings */
+.focus\:border-indigo-500:focus { border-color: var(--yellow); }
+.focus\:ring-indigo-500:focus { --tw-ring-color: var(--yellow); }
+
+/* errors and success messages */
+.text-red-600, .text-red-500, .dark\:text-red-400 { color: var(--danger); }
+.bg-green-100 { background-color: rgba(253, 230, 138, 0.12); }
+.text-green-800, .text-green-600, .dark\:text-green-400 { color: var(--yellow); }
+
+/* =========================================================
+   5. FORM CONTROLS
+   ========================================================= */
+html input[type="text"], html input[type="email"], html input[type="password"],
+html input[type="date"], html input[type="datetime-local"], html input[type="number"],
+html select, html textarea {
+    background-color: var(--night-950);
+    color: var(--text);
+    border-color: var(--border);
+}
+html input::placeholder, html textarea::placeholder { color: var(--muted); opacity: 0.7; }
+html option { background-color: var(--surface); color: var(--text); }
+
+html input[type="checkbox"] {
+    background-color: var(--night-950);
+    border-color: var(--border);
+    color: var(--pink);          /* the checked fill color */
+}
