@@ -9,6 +9,10 @@ use App\Models\SleepEntry;
 
 class SleepStats
 {
+    private const MIN_NIGHTS = 5;          // nights needed both with and without a habit
+    private const QUALITY_THRESHOLD = 0.3; // quality difference that counts as an effect
+    private const DURATION_THRESHOLD = 30; // minutes; only used when quality shows no clear effect
+
     public function __construct(private User $user)
     {
     }
@@ -193,5 +197,87 @@ class SleepStats
         }
 
         return ['best' => $best, 'worst' => $worst];
+    }
+
+    /**
+     * Compare nights with vs. without each habit.
+     */
+    public function habitInsights(): array
+    {
+        $rows = DB::table('habits as h')
+            ->join('sleep_entries as e', 'e.user_id', '=', 'h.user_id')
+            ->leftJoin('habit_sleep_entry as hse', function ($join) {
+                $join->on('hse.habit_id', '=', 'h.id')
+                    ->on('hse.sleep_entry_id', '=', 'e.id');
+            })
+            ->where('h.user_id', $this->user->id)
+            ->groupBy('h.id', 'h.name')
+            ->selectRaw('
+                h.name,
+                COUNT(hse.habit_id)                                                 AS n_with,
+                COUNT(CASE WHEN hse.habit_id IS NULL THEN 1 END)                    AS n_without,
+                AVG(CASE WHEN hse.habit_id IS NOT NULL THEN e.quality END)          AS q_with,
+                AVG(CASE WHEN hse.habit_id IS NULL     THEN e.quality END)          AS q_without,
+                AVG(CASE WHEN hse.habit_id IS NOT NULL THEN e.duration_minutes END) AS d_with,
+                AVG(CASE WHEN hse.habit_id IS NULL     THEN e.duration_minutes END) AS d_without
+            ')
+            ->get();
+
+        $ranked = [];
+        $insufficient = [];
+
+        foreach ($rows as $r) {
+            $nWith = (int) $r->n_with;
+            $nWithout = (int) $r->n_without;
+
+            if ($nWith < self::MIN_NIGHTS || $nWithout < self::MIN_NIGHTS) {
+                $insufficient[] = ['name' => $r->name, 'n_with' => $nWith, 'n_without' => $nWithout];
+                continue;
+            }
+
+            $qualityDiff = round((float) $r->q_with - (float) $r->q_without, 2);
+            $durationDiff = (float) $r->d_with - (float) $r->d_without;
+
+            $ranked[] = [
+                'name' => $r->name,
+                'n_with' => $nWith,
+                'n_without' => $nWithout,
+                'quality_with' => (float) $r->q_with,
+                'quality_without' => (float) $r->q_without,
+                'quality_diff' => $qualityDiff,
+                'duration_diff' => $durationDiff,
+                'verdict' => $this->verdict($qualityDiff, $durationDiff),
+            ];
+        }
+
+        // Best first: quality effect, then duration effect.
+        usort($ranked, fn ($a, $b) => [$b['quality_diff'], $b['duration_diff']]
+                                <=> [$a['quality_diff'], $a['duration_diff']]);
+
+        $byVerdict = fn (string $v) => array_values(array_filter($ranked, fn ($h) => $h['verdict'] === $v));
+
+        return [
+            'best' => $ranked[0] ?? null,
+            'worst' => count($ranked) > 1 ? end($ranked) : null,
+            'good' => $byVerdict('good'),
+            'bad' => array_reverse($byVerdict('bad')), // most harmful first
+            'neutral' => $byVerdict('neutral'),
+            'insufficient' => $insufficient,
+            'ranked_count' => count($ranked),
+            'min_nights' => self::MIN_NIGHTS,
+        ];
+    }
+
+    /**
+     * Quality decides first; duration only breaks the "no clear quality effect" case.
+     */
+    private function verdict(float $qualityDiff, float $durationDiff): string
+    {
+        if ($qualityDiff >= self::QUALITY_THRESHOLD) return 'good';
+        if ($qualityDiff <= -self::QUALITY_THRESHOLD) return 'bad';
+        if ($durationDiff >= self::DURATION_THRESHOLD) return 'good';
+        if ($durationDiff <= -self::DURATION_THRESHOLD) return 'bad';
+
+        return 'neutral';
     }
 }

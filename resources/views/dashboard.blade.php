@@ -28,6 +28,12 @@
     : sprintf('%02d:%02d', intdiv((int) round($m) % 1440, 60), (int) round($m) % 60);
 
     $ranges = ['30' => '30 days', '90' => '90 days', 'all' => 'All time'];
+
+    $habitColumns = [
+        'good' => ['Improve your sleep', 'No habit clearly helps yet.'],
+        'bad' => ['Make your sleep worse', 'No habit clearly hurts yet.'],
+        'neutral' => ['No clear difference', 'Nothing here yet.'],
+    ];
 @endphp
 
 <x-app-layout>
@@ -219,6 +225,56 @@
                         </div>
                     </div>
                 @endif
+
+                {{-- ================= Habits ================= --}}
+                <div class="bg-white p-6 shadow sm:rounded-lg">
+                    <h3 class="text-sm font-semibold uppercase tracking-wide text-gray-500">Habits and your sleep</h3>
+                    <p class="mt-1 text-xs text-gray-500">
+                        Nights with a habit compared to nights without it
+                        (a habit needs at least {{ $habitInsights['min_nights'] }} nights both with and without to be judged.)
+                    </p>
+
+                    @if ($habitInsights['ranked_count'] === 0)
+                        <p class="mt-4 text-sm text-gray-500">
+                            Not enough data yet. Keep logging habits on your nights.
+                        </p>
+                    @else
+                        <div class="mt-4 grid grid-cols-1 gap-6 sm:grid-cols-2">
+                            @foreach (['best' => 'Best habit', 'worst' => 'Worst habit'] as $key => $title)
+                                <div>
+                                    <p class="text-xs text-gray-500">{{ $title }}</p>
+                                    @if ($habitInsights[$key])
+                                        @include('dashboard._habit-effect', ['h' => $habitInsights[$key]])
+                                    @else
+                                        <p class="text-sm text-gray-500">Needs at least two judged habits.</p>
+                                    @endif
+                                </div>
+                            @endforeach
+                        </div>
+
+                        <div class="mt-6 grid grid-cols-1 gap-6 border-t border-gray-100 pt-6 lg:grid-cols-3">
+                            @foreach ($habitColumns as $verdict => [$title, $emptyText])
+                                <div>
+                                    <p class="text-sm font-semibold text-indigo-600">{{ $title }}</p>
+                                    <div class="mt-3 space-y-3">
+                                        @forelse ($habitInsights[$verdict] as $h)
+                                            <div>@include('dashboard._habit-effect', ['h' => $h])</div>
+                                        @empty
+                                            <p class="text-sm text-gray-500">{{ $emptyText }}</p>
+                                        @endforelse
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+
+                        @if (count($habitInsights['insufficient']) > 0)
+                            <p class="mt-6 text-xs text-gray-500">
+                                Not enough data yet for:
+                                {{ collect($habitInsights['insufficient'])->map(fn ($h) => "{$h['name']} ({$h['n_with']} with / {$h['n_without']} without)")->join(', ') }}
+                            </p>
+                        @endif
+                    @endif
+                </div>
             @endif
 
         </div>

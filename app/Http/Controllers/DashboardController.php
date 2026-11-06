@@ -24,6 +24,7 @@ class DashboardController extends Controller
             'charts' => $stats->series($days),
             'range' => $range,
             'extremes' => $stats->extremes(),
+            'habitInsights' => $stats->habitInsights(),
         ]);
     }
 }
