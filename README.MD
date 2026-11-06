@@ -1,7 +1,6 @@
 # Sleep Journal 😴
 
-A Laravel app for logging nightly sleep, tracking daily habits, and finding out
-which habits actually improve (or hurt) how well you sleep.
+A Laravel app for logging nightly sleep, tracking daily habits, and finding correlations between habits and sleep quality.
 
 ## Features
 
